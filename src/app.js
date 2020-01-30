@@ -3,7 +3,7 @@ import routes from './routes';
 
 
 class App {
-    constructor(){
+    constructor() {
         this.server = express();
         this.middlewares();
         this.routes();
@@ -13,7 +13,7 @@ class App {
         this.server.use(express.json());
     }
 
-    routes(){
+    routes() {
         this.server.use(routes);
     }
 }
