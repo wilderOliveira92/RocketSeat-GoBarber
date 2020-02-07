@@ -1,14 +1,40 @@
-import nodemailer from 'nodemailer';
-import mailConfig from '../config/mail';
+import nodemailer from "nodemailer";
+import mailConfig from "../config/mail";
+
+import { resolve } from "path";
+import exphbs from "express-handlebars";
+import nodemailerhbs from "nodemailer-express-handlebars";
 
 class Mail {
     constructor() {
-
         const { host, port, secure, auth } = mailConfig;
 
         this.trasporter = nodemailer.createTransport({
-            host, port, secure, auth: auth.user ? auth : null,
-        })
+            host,
+            port,
+            secure,
+            auth: auth.user ? auth : null
+        });
+
+        this.configureTamplates();
+    }
+
+    configureTamplates() {
+        const viewPath = resolve(__dirname, "..", "app", "viwes", "emails");
+
+        this.trasporter.use(
+            "compile",
+            nodemailerhbs({
+                viewEngine: exphbs.create({
+                    layoutsDir: resolve(viewPath, "layouts"),
+                    partialsDir: resolve(viewPath, "partials"),
+                    defaultLayout: "default",
+                    extname: ".hbs"
+                }),
+                viewPath,
+                extName: ".hbs"
+            })
+        );
     }
 
     sendMail(message) {
